@@ -9,8 +9,7 @@ import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useTheme } from './hooks/useTheme';
 
 export default function App() {
-  const { tasks, setTasks, handleDragStart, handleDragOver, handleDrop } =
-    useDragAndDrop(initialTasks);
+  const { tasks, setTasks, handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(initialTasks);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [filter, setFilter] = useState<Filter>({});
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -18,25 +17,24 @@ export default function App() {
 
   const handleDeleteTask = (taskId: string) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-    setSelectedTask(null);
+    setSelectedTask(null); // Reset selected task after deletion
   };
 
   const handleTaskUpdate = (updatedTask: Task) => {
     console.log('handleTaskUpdate called with:', updatedTask);
     
     setTasks((prevTasks) => {
-      // If the task exists, update it
-      if (prevTasks.some(task => task.id === updatedTask.id)) {
+      const taskExists = prevTasks.some((task) => task.id === updatedTask.id);
+      if (taskExists) {
         return prevTasks.map((task) =>
           task.id === updatedTask.id ? updatedTask : task
         );
       }
-      // If it's a new task, add it to the array
-      return [...prevTasks, updatedTask];
+      return [...prevTasks, updatedTask]; // Add new task if it doesn't exist
     });
     
-    setSelectedTask(null);
-    setIsAddingTask(false);
+    setSelectedTask(null); // Reset selected task
+    setIsAddingTask(false); // Close modal if updating
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -59,7 +57,7 @@ export default function App() {
       <Header
         onAddTask={() => {
           console.log('Add Task clicked');
-          setIsAddingTask(true);
+          setIsAddingTask(true); // Open the modal for task creation
         }}
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -79,7 +77,7 @@ export default function App() {
               title={status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
               tasks={filteredTasks.filter((task) => task.status === status)}
               teamMembers={teamMembers}
-              onTaskClick={setSelectedTask}
+              onTaskClick={setSelectedTask} // Open the modal for task editing
               onDragStart={handleDragStart}
               onDragOver={(e) => handleDragOver(e)}
               onDrop={(e) => handleDrop(e, status)}
@@ -93,8 +91,8 @@ export default function App() {
           task={selectedTask}
           teamMembers={teamMembers}
           onClose={() => {
-            setSelectedTask(null);
-            setIsAddingTask(false);
+            setSelectedTask(null); // Reset selected task when modal is closed
+            setIsAddingTask(false); // Reset adding task state
           }}
           onUpdate={handleTaskUpdate}
           onDelete={handleDeleteTask}
