@@ -22,11 +22,19 @@ export default function App() {
   };
 
   const handleTaskUpdate = (updatedTask: Task) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === updatedTask.id ? updatedTask : task
-      )
-    );
+    console.log('handleTaskUpdate called with:', updatedTask);
+    
+    setTasks((prevTasks) => {
+      // If the task exists, update it
+      if (prevTasks.some(task => task.id === updatedTask.id)) {
+        return prevTasks.map((task) =>
+          task.id === updatedTask.id ? updatedTask : task
+        );
+      }
+      // If it's a new task, add it to the array
+      return [...prevTasks, updatedTask];
+    });
+    
     setSelectedTask(null);
     setIsAddingTask(false);
   };
@@ -49,18 +57,21 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
       <Header
-        onAddTask={() => setIsAddingTask(true)}
+        onAddTask={() => {
+          console.log('Add Task clicked');
+          setIsAddingTask(true);
+        }}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <TaskFilters
           filter={filter}
           teamMembers={teamMembers}
           onFilterChange={setFilter}
         />
-        
+
         <div className="mt-8 flex space-x-4 overflow-x-auto pb-4">
           {columns.map((status) => (
             <TaskColumn
